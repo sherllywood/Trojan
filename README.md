@@ -30,6 +30,8 @@
 点此>>[Cloudflare接管域名解析教程](https://youtu.be/1GtDTWybJNM)
 
 
+不能用二级域名来申请证书！！！！
+
 3、下载并安装FinalShell SSH工具
 
 Windows版下载地址:[点此下载](http://www.hostbuf.com/downloads/finalshell_install.exe)
