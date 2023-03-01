@@ -60,6 +60,11 @@ macOS版下载地址: [点此下载](http://www.hostbuf.com/downloads/finalshell
 
     yum update -y && yum install -y curl 
     
+    
+ iptables -I INPUT -p tcp --dport 80 -j ACCEPT   
+  iptables -I INPUT -p tcp --dport 443 -j ACCEPT   
+    
+    
 ## Jrohy的一键Trojan面板脚本
 ### #安装/更新
 
