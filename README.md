@@ -1,149 +1,61 @@
-# 一键搭建Trojan-Go面板，配合使用CDN+Websocket，免费开启CDN隐藏自己VPS的真实IP，保护VPS永不被墙
+使用shift+tab，可以让CC在计划模式、默认模式和Accept Edits模式之间来回切换
+模式
+功能
+默认模式
+启动 Claude Code 后的初始交互状态，类似于一个增强版的对话终端，用于意图确认、信息查询和简单任务。
+计划模式
+ Claude 进行复杂的代码更改时，它会进入这一阶段。分析需求并制定执行步骤。不直接动代码。
+Accept Edits模式
+这是 Claude Code 的“落地”阶段，会执行代码变更的最终确认与写入
+额外提醒：
+1. 如果希望CC能一路绿灯执行所有操作，需要输入指令/exit 退出重启后，在启动CC时输入以下命令
+claude --dangerously-skip-permissions
+2. CC在Accept Edits模式下，执行终端命令时，下图三个选项的含义依次分别是：
+  - 仅同意这一次的命令执行
+  - 同意，且该项目之后执行项目依赖安装时，不再询问
+  - 不同意，再商量
+[图片]
 
+5. 如何提供文件给CC
+方式 1：本地文件
+使用 @ 指令让CC进行本地文件信息查找：
+[图片]
+方式 2：图片
+直接拖拽图片至对话框，或复制/粘贴：
+- Windows：Alt + V
+- macOS：Command + V
+方式 3：多行文本输入
+在CC文本框内换行的快捷键（不是 Shift + Enter）：
+- Windows：Ctrl + Enter
+- macOS：Option + Enter
 
-### trojan多用户管理功能
-- 在线web页面和命令行两种方式管理trojan多用户
-- 启动 / 停止 / 重启 trojan 服务端
-- 支持流量统计和流量限制
-- 命令行模式管理, 支持命令补全
-- 集成acme.sh证书申请
-- 生成客户端配置文件
-- 在线实时查看trojan日志
-- 在线trojan和trojan-go随时切换
-- 支持trojan://分享链接和二维码分享(仅限web页面)
-- 支持转化为clash订阅地址并导入到clash_for_windows(仅限web页面)
-- 限制用户使用期限
-
-一键搭建Trojan-Go教程：https://youtu.be/6SVkVnX8ymY
-
-大神Jrohy的一键脚本支持Trojan-Go，相信在可靠性方面已经十分成熟。既然是一键脚本，我们只要有一台VPS，就可在上面很方便地安装部署。
-
-
-## 准备工作
-1、VPS一台重置好主流的操作系统（例：Debian10 64）
-
-[Vultr 购买地址，点此进入](https://www.vultr.com/?ref=8941832-8H)：按时计费，最低6$/月。
-
-2、域名一个（已经解析的域名，Win+R输入CMD 回车：键入ping 空格输入你的域名，检查一下是否可以ping通）
-
-- 如果要使用Trojan-Go开启CND隐藏IP功能，需要将域名托管到CDN。
-点此>>[Cloudflare接管域名解析教程](https://youtu.be/1GtDTWybJNM)
-
-
-不能用二级域名来申请证书！！！！
-
-3、下载并安装FinalShell SSH工具
-
-Windows版下载地址:[点此下载](http://www.hostbuf.com/downloads/finalshell_install.exe)
-
-macOS版下载地址: [点此下载](http://www.hostbuf.com/downloads/finalshell_install.pkg)
-
-## 搭建Trojan-go面板
-
-### 开启Debian10自带的BBR加速
-脚本如下，可以一起复制运行，或分四行代码一条一条运行。
-
-    echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
-       
-    echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
-    
-    sysctl -p
-    
-    lsmod | grep bbr
-    
-## 更新系统安装环境
-
-1、Debian/Ubuntu系统执行以下命令：。
-
-    apt update -y && apt install -y curl
-    
-    
-2、CentOS系统执行以下命令：
-
-    yum update -y && yum install -y curl 
-    
-    
- iptables -I INPUT -p tcp --dport 80 -j ACCEPT   
-  iptables -I INPUT -p tcp --dport 443 -j ACCEPT   
-    
-    
-## Jrohy的一键Trojan面板脚本
-### #安装/更新
-
-    source <(curl -sL https://git.io/trojan-install)
-    
-### #卸载
-
-    source <(curl -sL https://git.io/trojan-install) --remove
-    
-    
-### 安装过程中，会出现3次提示，请根据以下选项进行：
-
-- 1、第一次需要选择1. Let’s Encrypt证书
-   请输入申请证书的域名：host.kjxlu.com
-   
-- 2、选择‘1. 安装docker版mysql’
-   回车或手动输入用户名
-   
-注：跑完以上代码后，最后会出现一个选择菜单，不用理会，直接回车退出即可，即回到#提示符的状态下。至此，Trojan-Go面板搭建完成。
-
-    
-### 安装完后输入'trojan'可进入管理程序
-
-浏览器访问 https://域名，可在线web页面管理trojan用户
-
-第一次登陆面板时，会让您输入登陆密码，输入完后请使用用户名‘admin’及您设置的密码登陆。
-
------------------------------------
-
-## Trojan-Go 设置
-
-### 登陆面板，修改Trojan类型为Trojan-Go
-
-<div align=center><img src="https://github.com/KEJIXIAOLU/Trojan/blob/main/%E6%9C%AA%E6%A0%87%E9%A2%98-3.jpg"  /></div>
-
-## 更改Trojan-Go配置文件
-找到VPS目录文件 /usr/local/etc/trojan/config.json ，备份一份（若是把类型切换回来可以恢复使用Trojan）。
-
-对着config.json文件按鼠标右键，选择‘用记事本编辑’。
-## 更改配置参数：
-### *注意：要在mysql的大括号}后加一个英文的逗号。路径和域名需要在客户端匹配。
-
-         "websocket": {
-        "enabled": true,
-        "path": "/DFE4545DFDED/",
-        "host": "你的域名"
-       },
-        "mux": {
-        "enabled": true,
-        "concurrency": 8,
-        "idle_timeout": 60
-        }
-
-
-
-<div align=center><img src="https://github.com/KEJIXIAOLU/Trojan/blob/main/%E6%9C%AA%E6%A0%87%E9%A2%981.png"  /></div>
-
-1、/DFE4545DFDED/为路径，随意填写。
-2、host后 填上你的域名
-
-### 保存后，在Trojan-Go面板重启服务。
-
-## 下载Trojan-Go客户端
-### Trojan-QT5 （支持WIN/MACOS）
-因为此Trojan-QT5 项目已经停更，所以只有1.4.0版本的供大家下载。
-
-https://github.com/V2RaySSR/Trojan_panel_web/releases/tag/trojanqt5
-
-- 如果Windows安装出错，请下载右上方的附件： Trojan-Qt5-Windows 压缩包
-
-<div align=center><img src="https://github.com/KEJIXIAOLU/Trojan/blob/main/%E6%9C%AA%E6%A0%87%E9%A2%98-2.png"  /></div>
-
-### QV2RAY（支持WIN/MACOS）
-
-QV2RAY 下载地址：https://github.com/Qv2ray/Qv2ray/releases/
-
-QV2RAY 内核下载地址：https://github.com/v2ray/v2ray-core/releases
-
-
-
+6. 指令大全
+Claude指令
+功能说明
+/help
+提供所有指令，以及指令背后遵循的意思
+/model
+切换高中低档模型
+/btw
+By the way缩写，可以暂时切出正在执行的项目，隔离上下文，方便使用者与CC进行临时对话。会话完毕后，可按esc消除临时会话
+/simplify
+输入后会派生出3个agent，从代码质量、运行效率和复用性三个角度做一次代码审核，然后自动优化修改
+/rewind
+进入回滚界面
+/compact
+主动压缩精简上下文
+/clear
+彻底清空上下文，相当于重开一个会话
+/context
+详细展示agent当前的上下文信息，诸如：上下文占比，上下文类别等等
+/resume
+在全新的上下文窗口，选择恢复到之前的对话
+/init
+初始化创建项目级Claude.md
+/memory
+针对Claude的全局、项目记忆，以及auto memory进行操作和管理
+/agents
+创建、调用、管理子agent
+/plugin
+发现新插件，管理已下载插件，新增插件生态
+  更多指令可参考以下pdf文档：
